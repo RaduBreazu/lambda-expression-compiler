@@ -13,13 +13,13 @@ For Term, the notation used is $x$.
 
 For Abstraction, the notation used is $λx.e$, where $e$ is a lambda expression.
 
-For Application, the syntax is $(e_{1}\;\; e_{2})$, where $e_{1}$ and $e_{2}$ are lambda expressions.
+For Application, the syntax is $(e_{1}\ \ e_{2})$, where $e_{1}$ and $e_{2}$ are lambda expressions.
 
 **No other simplifications have been made.**
 
 _Examples of lambda expressions_:
-- $λx.λy.(x\;\; y)$
-- $((λx.(x\;\; y)\;\; z)\;\; λx.(x\;\; x))$
+- $λx.λy.(x\ \ y)$
+- $((λx.(x\ \ y)\ \ z)\ \ λx.(x\ \ x))$
 
 ## Running the project
 In order to run the compiler, the following commands can be used:
