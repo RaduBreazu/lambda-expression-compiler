@@ -19,6 +19,7 @@ instance Show LambdaExpr where
     show (Abs x e1) = "λ" ++ x ++ "." ++ show e1
     show (App e1 e2) = "(" ++ show e1 ++ " " ++ show e2 ++ ")"
 
+-- determines where the current function application ends
 traverseInput :: Integral a => String -> Stack Char -> a -> String -> String
 traverseInput [] _ _ acc = reverse acc
 traverseInput str@(h : t) stack initialSize acc =
@@ -105,8 +106,8 @@ isRedex :: LambdaExpr -> Bool
 isRedex (App (Abs _ _) _) = True
 isRedex _ = False
 
-αConversion :: LambdaExpr -> Maybe LambdaExpr
-αConversion expr = if isRedex expr then Just $ renameVariables expr else Nothing
+αConversion :: LambdaExpr -> LambdaExpr
+αConversion expr = if isRedex expr then renameVariables expr else error ("Cannot do α-conversion on " ++ show expr ++ " as it is not a β-redex.\n")
     where
         helper_remove :: LambdaExpr -> S.Set String -> LambdaExpr
         helper_remove expr vars = S.foldr (\element acc -> f element acc (S.size vars)) expr vars
@@ -131,8 +132,8 @@ isRedex _ = False
 
         renameVariables _ = undefined
 
-βReduction :: LambdaExpr -> Maybe LambdaExpr
-βReduction expr = if isRedex expr then Just $ computeRedex expr else Nothing
+βReduction :: LambdaExpr -> LambdaExpr
+βReduction expr = if isRedex expr then computeRedex expr else error ("Cannot do β-reduction on " ++ show expr ++ " as it is not a β-redex.\n")
     where
         computeRedex :: LambdaExpr -> LambdaExpr
         computeRedex (App (Abs x e1) e2) = replace e1 x e2
@@ -152,7 +153,7 @@ computeLambdaExpr expr =
         compute' :: LambdaExpr -> LambdaExpr -> LambdaExpr
         compute' expr@(App (Abs x e1) e2) redex =
             if expr == redex
-                then fromJust . βReduction . fromJust . αConversion $ redex
+                then βReduction . αConversion $ redex
                 else expr
         compute' (Term x) redex = Term x
         compute' (Abs x e1) redex = Abs x (compute' e1 redex)
